@@ -94,3 +94,64 @@ export async function getStaticProps () {
 ```
 
 运行项目，我们就会发现HTML已经呈现出了Markdown文件内容。
+
+* ## 列表页面开发
+
+好的，清空掉刚才首页的测试代码，开始进入列表页面开发，加入如下代码：
+
+```js
+export default function Home ({ posts }) {
+  return (
+    <div className={styles.page}>
+      <main className={styles.main}>
+        <ul>
+          {
+            posts.map(post => (
+              <li key={post}>
+                <span className={styles.titleWrapper}>
+                  <a className={styles.title}>{post}</a>
+                </span>
+                <span className={styles.date}></span>
+             </li>
+            ))
+          }
+        </ul>
+      </main>
+    </div>
+  )
+}
+
+export async function getStaticProps () {
+  const postsDirectory = path.resolve(process.cwd(), 'posts')
+  const posts = fs.readdirSync(postsDirectory).filter(name => {
+    return /\.md$/.test(path.extname(name))
+  }).map(name => {
+    const markdown = fs.readFileSync(`${postsDirectory}/${name}`, 'utf8')
+    return markdown
+  })
+  
+  return {
+    props: {
+      posts
+    }
+  }
+}
+```
+
+并在`posts`目录下创建三个Markdown文件
+
+```markdown
+# 第一篇文章
+```
+
+```markdown
+# 第二篇文章
+```
+
+```markdown
+# 第三篇文章
+```
+
+不出意外，在页面上应该能够看到三个标题。
+
+为了和Markdown文章内容区别，通常会使用yaml语法来描述文章的元信息

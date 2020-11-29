@@ -4,16 +4,39 @@ import ReactMarkdown from 'react-markdown'
 import fs from 'fs'
 import path from 'path'
 
-export default function Home ({ markdown }) {
-  return (<ReactMarkdown children={markdown}></ReactMarkdown>)
+export default function Home ({ posts }) {
+  return (
+    <div className={styles.page}>
+      <main className={styles.main}>
+        <ul>
+          {
+            posts.map(post => (
+              <li key={post}>
+                <span className={styles.titleWrapper}>
+                  <a className={styles.title}>{post}</a>
+                </span>
+                <span className={styles.date}></span>
+             </li>
+            ))
+          }
+        </ul>
+      </main>
+    </div>
+  )
 }
 
 export async function getStaticProps () {
-  const markdown = fs.readFileSync(path.resolve(process.cwd(), 'posts/index.md'), 'utf8')
+  const postsDirectory = path.resolve(process.cwd(), 'posts')
+  const posts = fs.readdirSync(postsDirectory).filter(name => {
+    return /\.md$/.test(path.extname(name))
+  }).map(name => {
+    const markdown = fs.readFileSync(`${postsDirectory}/${name}`, 'utf8')
+    return markdown
+  })
   
   return {
     props: {
-      markdown
+      posts
     }
   }
 }
