@@ -28,3 +28,35 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+# How to useing next.js as static generator for creating markdown blog?
+
+
+### 初始化项目
+
+打开next.js的文档，按照步骤快速创建一个next.js应用
+
+```
+npx create-next-app
+
+# 文件目录如下
+.
+├── README.md
+├── package.json
+├── pages
+├── public
+├── styles
+└── yarn.lock
+```
+
+创建完成之后我们先进入目录，启动一下项目，确保没有问题
+
+接下来，创建`/pages/posts`目录，并在该目录下添加一个Markdown的文件`index.md`：
+
+```
+# hello next.js
+```
+
+### 渲染Markdown -> Html
+
+
