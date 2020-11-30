@@ -3,6 +3,8 @@ import styles from '../styles/Home.module.css'
 import ReactMarkdown from 'react-markdown'
 import fs from 'fs'
 import path from 'path'
+import remark from 'remark'
+import frontmatter from 'remark-frontmatter'
 
 export default function Home ({ posts }) {
   return (
@@ -31,8 +33,27 @@ export async function getStaticProps () {
     return /\.md$/.test(path.extname(name))
   }).map(name => {
     const markdown = fs.readFileSync(`${postsDirectory}/${name}`, 'utf8')
+    // const contents = await remark().use(frontmatter, ['yaml']).process(markdown, (err, file) => {
+    //   console.error(err || file)
+    //   console.log(String(file))
+    // })
+    // console.log(contents)
+    console.log(typeof markdown)
     return markdown
   })
+
+  const allPost = []
+
+  for (let post of posts) {
+    const contents = await remark().use(frontmatter, ['yaml', 'toml']).process(post, (err, file) => {
+      console.error(err || file)
+      console.log(String(file))
+    })
+
+    allPost.push(contents)
+  }
+
+  console.log(allPost)
   
   return {
     props: {

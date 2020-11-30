@@ -154,4 +154,11 @@ export async function getStaticProps () {
 
 不出意外，在页面上应该能够看到三个标题。
 
-为了和Markdown文章内容区别，通常会使用yaml语法来描述文章的元信息
+为了和Markdown文章内容区别，通常会使用yaml语法来描述文章的元信息。
+
+所以，我们还需要安装能够解析yaml语法的依赖，这里我们选择remark和它的插件remark-frontmatter。
+
+```
+yarn add remark remark-frontmatter 
+```
+
