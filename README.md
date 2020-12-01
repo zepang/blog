@@ -114,7 +114,7 @@ export default function Home ({ posts }) {
                 <span className={styles.titleWrapper}>
                   <a className={styles.title}>{post.meta.title}</a>
                 </span>
-                <span className={styles.date}></span>
+                <span className={styles.date}>{post.meta.date}</span>
              </li>
             ))
           }
@@ -183,7 +183,7 @@ export default function Home ({ posts }) {
                 <span className={styles.titleWrapper}>
                   <a className={styles.title}>{post.meta.title}</a>
                 </span>
-                <span className={styles.date}></span>
+                <span className={styles.date}>{post.meta.date}</span>
              </li>
             ))
           }
@@ -200,8 +200,109 @@ export default function Home ({ posts }) {
 
 重新运行项目，页面已经呈现出了Markdown文件内容。
 
-* ## 列表页面开发
+* 动态路由
 
-通过上边一系列的尝试和反馈的结果，已经满足博客文章列表页面的开发的条件。
+SSG打包出来的都是静态页面，也就是说需要为每个Markdown文章页输出一个HTML文章页，通过访问URL上的静态文件名来访问HTML页面。
 
+为了达到这个效果，需要用到next.js的动态路由和`getStaticPaths`函数，你也可以使用通过在`next.config.js`中配置`exportPathMap`来替换`getStaticPaths`函数的作用。
 
+先来尝试一下next.js的动态路由，创建`pages/post/[postName].js`：
+
+```js
+import { useRouter } from 'next/router'
+export default function post () {
+  const router = useRouter()
+  return (<h1>这是文章{router.query.postName}的详情页面</h1>)
+}
+```
+
+之后可以通过`localhost:3000/post/:postName`来访问页面，并且可以通过`next/router`的`useRouter` hooks创建的router对象获取 `postName` 的值。
+
+在改造`pages/post/[postName].js`之前，先把`index.js`文件中的一些通用方法提到`/utils/index.js`文件中：
+
+```js
+import fs from 'fs'
+import path from 'path'
+import frontMatter from 'front-matter'
+
+const postsDirectory = path.resolve(process.cwd(), 'posts')
+
+export function getAllPosts () {
+  const posts = fs.readdirSync(postsDirectory).filter(name => {
+    return /\.md$/.test(path.extname(name))
+  }).map(name => {
+    const filename = path.basename(name, path.extname(name))
+    return getPost(filename)
+  })
+
+  return posts
+}
+
+export function getPost (filename) {
+  const post = fs.readFileSync(`${postsDirectory}/${filename}.md`, 'utf8')
+  let { attributes, body } = frontMatter(post)
+
+  // 确保title存在
+  if (Object.prototype.toString.call(attributes) !== '[object Object]') {
+    attributes = { title: filename }
+  } else if (!attributes.title) {
+    attributes.title = filename
+  }
+
+  attributes.filename = filename
+
+  return {
+    meta: attributes,
+    content: body
+  }
+}
+```
+
+接下来在`pages/post/[postName].js`加入`getStaticPaths`函数和`getStaticProps函数`：
+
+```js
+import { useRouter } from 'next/router'
+import { getAllPosts, getPost } from '../../utils'
+import ReactMarkdown from 'react-markdown'
+
+export default function post ({ post = {} }) {
+  const router = useRouter()
+
+  return (
+    <div>
+      <h1>这是文章{router.query.postName}的详情页面</h1>
+      {post.content && (<ReactMarkdown children={post.content}></ReactMarkdown>)}
+    </div>
+  ) 
+}
+
+export async function getStaticProps (contxt) {
+  let post = getPost(contxt.params.postName)
+
+  return {
+    props: {
+      post
+    }
+  }
+}
+
+export async function getStaticPaths () {
+  const posts = getAllPosts()
+  const paths = posts.map(post => {
+    return {
+      params: { 
+        // 兼容中文命名需要使用 encodeURIComponent，否则无法根据URL的文件名找到对应文件
+        postName: encodeURIComponent(post.meta.filename) 
+      }
+    }
+  })
+
+  return {
+    paths,
+    // 不存在的文章显示404
+    fallback: false
+  }
+} 
+```
+
+目前已经可以通过访问`localhost:3000/post/:postName`正确的展示Markdown文章页面和内容。
