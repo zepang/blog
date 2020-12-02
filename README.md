@@ -1,4 +1,4 @@
-# 如何把next.js配置成一个Markdown博客静态站点生成器
+# Next.js SSG Starter For Mardown Blog
 
 静态站点生成器SSG是介于传统静态站点和动态站点之间的一种折中解决方案。
 
@@ -6,9 +6,9 @@
 
 SGG与上边两者的区别是SSG会提前（打包编译）获取数据，数据来源可能是通过API或者Markdown、JSON文件等等，然后根据获取的数据输出HTML静态文件。
 
-next.js提供getStaticProps的函数能够提前获取静态数据，所以说依赖next.js创建的项目是具备成为SSG的条件的。
+next.js9.3版本宣布支持SSG，具体查看该文章[https://nextjs.org/blog/next-9-3#next-gen-static-site-generation-ssg-support](https://nextjs.org/blog/next-9-3#next-gen-static-site-generation-ssg-support)。
 
-话多不说，直接开干。
+所以，我打算动手尝试配置一个 Next.js SSG Blog Starter 项目。
 
 * ## 初始化一个next.js项目
 
@@ -306,3 +306,7 @@ export async function getStaticPaths () {
 ```
 
 目前已经可以通过访问`localhost:3000/post/:postName`正确的展示Markdown文章页面和内容。
+
+OK，到这里的话，已经算是配置了一个比较基础的starter项目。
+
+另外，我打算在这个starter项目的基础上来搭建个人博客，后续有其他的内容需要添加到模板的将会继续添加。
