@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { getAllPosts } from '../utils'
+import Link from 'next/link'
 
 export default function Home ({ posts }) {
   return (
@@ -11,10 +12,14 @@ export default function Home ({ posts }) {
           {
             posts.map((post, i) => (
               <li key={i}>
-                <span className={styles.titleWrapper}>
-                  <a className={styles.title}>{post.meta.title}</a>
-                </span>
-                <span className={styles.date}>{post.meta.date}</span>
+                <Link href={`/post/${post.meta.filename}`}>
+                  <a>
+                    <span className={styles.titleWrapper}>
+                      <a className={styles.title}>{post.meta.title}</a>
+                    </span>
+                    <span className={styles.date}>{post.meta.date}</span>
+                  </a>
+                </Link>
              </li>
             ))
           }
