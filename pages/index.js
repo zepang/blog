@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function Home ({ posts }) {
   return (
-    <div className={styles.page}>
+    <div className={`container mx-auto px-4`}>
       <h1>#posts</h1>
       <main className={styles.main}>
         <ul>
