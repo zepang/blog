@@ -1,0 +1,47 @@
+#article p {
+  line-height: 1.875;
+  font-size: 1rem;
+  min-height: 2rem;
+  white-space: pre-wrap;
+}
+
+#article h1 {
+  font-size: 3rem;
+  margin: 1.25rem 0;
+}
+
+#article h2 {
+  font-size: 2.25rem;
+  margin: 1.25rem 0;
+}
+
+#article h3 {
+  font-size: 1.875rem;
+  margin: 1rem 0;
+}
+
+#article h4 {
+  font-size: 1.875rem;
+  margin: 0.75rem 0;
+}
+
+#article ul {
+  margin: 1.5rem 0 1.5rem 2rem;
+}
+
+#article ul li {
+  list-style: disc;
+}
+
+#article hr {
+  overflow: hidden;
+  margin: 3rem 0;
+  border-color: #000;
+}
+
+#article .hljs {
+  padding: 1em;
+  border-radius: .3em;
+  margin: 1.5em 0;
+}
+

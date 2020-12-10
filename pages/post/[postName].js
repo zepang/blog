@@ -1,15 +1,27 @@
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import { getAllPosts, getPost } from '../../utils'
 import ReactMarkdown from 'react-markdown'
+import Layout from '../../components/Layout'
+import hljs from 'highlight.js'
+import javascript from 'highlight.js/lib/languages/javascript'
 
 export default function post ({ post = {} }) {
   const router = useRouter()
+  
+  hljs.registerLanguage('javascript', javascript)
+
+  useEffect(() => {
+    hljs.initHighlighting()
+  }, [])
 
   return (
-    <div>
-      <h1>这是文章{router.query.postName}的详情页面</h1>
-      {post.content && (<ReactMarkdown children={post.content}></ReactMarkdown>)}
-    </div>
+    <Layout>
+       <div className={`pt-8 mb-24`}>
+        <h1 className={`py-8 text-6xl font-bold tracking-widest`}>#{router.query.postName}</h1>
+        <div id={`article`} className={`px-12`}>{post.content && (<ReactMarkdown children={post.content}></ReactMarkdown>)}</div>
+      </div>
+    </Layout>
   ) 
 }
 
