@@ -3,11 +3,13 @@ import NProgress from 'nprogress'
 
 let timer, state, activeRequests = 0, delay = 200
 
+NProgress.configure({ showSpinner: false })
+
 function load () {
   if (state === 'loading') return
 
   state = 'loading'
-  
+
   timer = setTimeout(() => {
     NProgress.start()
   }, delay)
@@ -20,7 +22,6 @@ function stop () {
 
   clearTimeout(timer)
   NProgress.set(1.0)
-  NProgress.stop()
 }
 
 Router.events.on('routerChangeState', load)

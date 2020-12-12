@@ -16,7 +16,7 @@ export default function Home ({ posts }) {
                 key={i}
                 className={`block my-8 py-8 shadow bg-white`}
               >
-                <Link href={`/post/${post.meta.filename}`}>
+                <Link href={`/post/${post.meta.filename}`} prefetch={false}>
                   <a className={`h-24 flex items-stretch`}>
                     <div className={`flex items-center px-16 border-r`}>
                       <span className={`inline-block text-2l font-bold text-gray-500`}>{post.meta.date}</span>

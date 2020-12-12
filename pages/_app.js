@@ -8,13 +8,23 @@ const TopProgressBar = dynamic(
   () => {
     return import('../components/TopProgressBar')
   },
-  { ssr: false },
+  { ssr: false }
 )
 
 function MyApp({ Component, pageProps }) {
   return <>
-    <TopProgressBar></TopProgressBar> 
-    <Component {...pageProps} />
+    {/* {
+      loading ? (<PageLoading></PageLoading>) : (
+        <div>
+          <TopProgressBar></TopProgressBar> 
+          <Component {...pageProps} />
+        </div>
+      )
+    } */}
+    <div>
+      <TopProgressBar></TopProgressBar> 
+      <Component {...pageProps} />
+    </div>
   </>
 }
 

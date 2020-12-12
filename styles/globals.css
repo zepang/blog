@@ -40,3 +40,16 @@ a {
 * {
   box-sizing: border-box;
 }
+
+#nprogress .bar {
+  background-color: #FF9800;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #FF9800, 0 0 5px #FF9800;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #FF9800;
+  border-left-color: #FF9800;
+}
