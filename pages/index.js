@@ -1,8 +1,5 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
 import { getAllPosts } from '../utils'
 import Link from 'next/link'
-import Header from '../components/Header'
 import Layout from '../components/Layout'
 
 export default function Home ({ posts }) {
