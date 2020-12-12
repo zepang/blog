@@ -3,23 +3,20 @@ import { useEffect } from 'react'
 import { getAllPosts, getPost } from '../../utils'
 import ReactMarkdown from 'react-markdown'
 import Layout from '../../components/Layout'
-import hljs from 'highlight.js'
-import javascript from 'highlight.js/lib/languages/javascript'
+import CodeBlock from '../../components/CodeBlock'
 
 export default function post ({ post = {} }) {
   const router = useRouter()
-  
-  hljs.registerLanguage('javascript', javascript)
-
-  useEffect(() => {
-    hljs.initHighlighting()
-  }, [])
 
   return (
     <Layout>
        <div className={`pt-8 mb-24`}>
         <h1 className={`py-8 text-6xl font-bold tracking-widest`}>#{router.query.postName}</h1>
-        <div id={`article`} className={`px-12`}>{post.content && (<ReactMarkdown children={post.content}></ReactMarkdown>)}</div>
+        <div id={`article`} className={`px-12`}>
+        {
+          post.content && (<ReactMarkdown source={post.content} renderers={{ code: CodeBlock }}></ReactMarkdown>)
+        }
+      </div>
       </div>
     </Layout>
   ) 
