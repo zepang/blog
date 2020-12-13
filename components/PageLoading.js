@@ -1,12 +1,10 @@
 import Layout from './Layout'
-import Styles from '../styles/PageLoading.module.css'
+import Loading from './Loading'
 
 export default function PageLoading () {
   return (
     <Layout>
-      <div>
-        <div className={Styles.loader}></div>
-      </div>
+      <Loading></Loading>
     </Layout>
   )
 }
