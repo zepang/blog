@@ -51,7 +51,7 @@ export default function Home ({ posts }) {
             currentPosts.map((post, i) => (
               <li 
                 key={i}
-                className={`block my-8 py-8 shadow bg-white`}
+                className={`block my-8 py-8 shadow-sm bg-white hover:bg-grey-500`}
               >
                 <Link href={`/post/${post.meta.filename}`} prefetch={false}>
                   <a className={`h-24 flex items-stretch`}>

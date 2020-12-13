@@ -89,3 +89,5 @@ export default function Home ({ posts }) {
 ```
 
 打开页面，发现样式生效，添加tailwindcss成功。
+
+
