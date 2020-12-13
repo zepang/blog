@@ -13,14 +13,6 @@ const TopProgressBar = dynamic(
 
 function MyApp({ Component, pageProps }) {
   return <>
-    {/* {
-      loading ? (<PageLoading></PageLoading>) : (
-        <div>
-          <TopProgressBar></TopProgressBar> 
-          <Component {...pageProps} />
-        </div>
-      )
-    } */}
     <div>
       <TopProgressBar></TopProgressBar> 
       <Component {...pageProps} />
