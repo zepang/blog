@@ -1,4 +1,4 @@
-import Styles from '../styles/PageLoading.module.css'
+import Styles from '../styles/PageLoading.module.scss'
 
 export default function Loading () {
   return (

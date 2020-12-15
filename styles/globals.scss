@@ -4,6 +4,8 @@
 
 @tailwind utilities;
 
+@import './variables.scss';
+
 html,
 body {
   padding: 0;
@@ -23,7 +25,7 @@ body:after {
   z-index: 1;
   opacity: 0.12;
   background-color: #f8f8f8;
-  background-image:  linear-gradient(#f7a544 0.8px, transparent 0.8px), linear-gradient(to right, #f7a544 0.8px, #E5E5F7 0.8px);
+  background-image:  linear-gradient($primaryColor 0.8px, transparent 0.8px), linear-gradient(to right, $primaryColor 0.8px, #E5E5F7 0.8px);
   background-size: 16px 16px;
 }
 
@@ -42,14 +44,14 @@ a {
 }
 
 #nprogress .bar {
-  background-color: #FF9800;
+  background-color: $primaryColor;
 }
 
 #nprogress .peg {
-  box-shadow: 0 0 10px #FF9800, 0 0 5px #FF9800;
+  box-shadow: 0 0 10px $primaryColor, 0 0 5px $primaryColor;
 }
 
 #nprogress .spinner-icon {
-  border-top-color: #FF9800;
-  border-left-color: #FF9800;
+  border-top-color: $primaryColor;
+  border-left-color: $primaryColor;
 }

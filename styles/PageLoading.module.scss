@@ -1,15 +1,17 @@
+@import './variables.scss';
+
 .loaderWrapper {}
 
 .loader,
 .loader:before,
 .loader:after {
-  background: #FF9800;
+  background: $primaryColor;
   animation: load1 1s infinite ease-in-out;
   width: 1em;
   height: 4em;
 }
 .loader {
-  color: #FF9800;
+  color: $primaryColor;
   text-indent: -9999em;
   margin: 88px auto;
   position: relative;
