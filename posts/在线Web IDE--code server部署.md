@@ -62,3 +62,5 @@ location /code-server/ {
 打开浏览器访问 `https://example.com/code-server`，出现输入框，输入刚才设置的密码，进入IDE
 
 ![]('../assets/images/vsocde-web-ide.png')
+
+最后，配置一下git，搞定收工！
