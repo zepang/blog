@@ -131,9 +131,13 @@ function createAppContext() {
             errorHandler: undefined,
             warnHandler: undefined
         },
+        // 全局mixins
         mixins: [],
+        // 全局插件
         components: {},
+        // 全局指令
         directives: {},
+        // 全局的provide
         provides: Object.create(null)
     };
 }
