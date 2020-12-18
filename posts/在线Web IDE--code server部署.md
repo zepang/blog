@@ -49,7 +49,7 @@ CONTAINER ID   IMAGE                         COMMAND                  CREATED   
 
 在Nginx的配置文件上加一个 `location` 的配置块
 
-```conf
+```nginx
 location /code-server/ {
     proxy_pass http://localhost:8080/;
     proxy_set_header Host $host;
@@ -65,6 +65,9 @@ location /code-server/ {
 
 关于code-server的配置可以查看文档或者搜索相关的文章
 
+关于换的问题根据个人的需求处理就好了
+
 参考：
 
 - https://blog.0x233.cn/2020/04/11/code-server/
+
