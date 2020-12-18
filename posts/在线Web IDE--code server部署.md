@@ -62,3 +62,9 @@ location /code-server/ {
 打开浏览器访问 `https://example.com/code-server`，出现输入框，输入刚才设置的密码，进入IDE
 
 ![]('../assets/images/vsocde-web-ide.png')
+
+关于code-server的配置可以查看文档或者搜索相关的文章
+
+参考：
+
+- https://blog.0x233.cn/2020/04/11/code-server/
