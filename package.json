@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "pm2 deploy ecosystem.config.js production update"
   },
   "dependencies": {
     "front-matter": "^4.0.2",
@@ -22,6 +23,7 @@
     "tailwindcss": "^2.0.1"
   },
   "devDependencies": {
+    "pm2": "^4.5.1",
     "postcss": "^8.1.13",
     "postcss-loader": "^4.1.0"
   }
