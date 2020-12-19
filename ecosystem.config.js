@@ -13,8 +13,8 @@ module.exports = {
       repo : 'https://github.com/zepang/blog.git',
       path : '/root/projects/ssg-blog',
       'pre-deploy-local': '',
-      'post-setup': 'yarn install && pm2 reload ecosystem.config.js --env production',
-      'post-deploy' : 'yarn install && pm2 reload ecosystem.config.js --env production',
+      'post-setup': 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production',
+      'post-deploy' : 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production',
       'pre-setup': ''
     }
   }
