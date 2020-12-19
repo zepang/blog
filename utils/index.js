@@ -7,9 +7,9 @@ const postsDirectory = path.resolve(process.cwd(), 'posts')
 export function getAllPosts () {
   const posts = fs.readdirSync(postsDirectory).filter(name => {
     return /\.md$/.test(path.extname(name))
-  }).map(name => {
+  }).map((name, index) => {
     const filename = path.basename(name, path.extname(name))
-    return getPost(filename)
+    return { ...getPost(filename), index }
   })
 
   return posts

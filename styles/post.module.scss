@@ -1,0 +1,11 @@
+@import './variables.scss';
+
+.prevPost,
+.nextPost {
+  box-sizing: border-box;
+  min-width: 50%;
+  
+  &:hover {
+    color: $primaryColor;
+  }
+}
