@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build && next export",
     "start": "next start",
+    "deploy:setup": "pm2 deploy ecosystem.config.js production setup",
     "deploy": "pm2 deploy ecosystem.config.js production update"
   },
   "dependencies": {

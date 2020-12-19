@@ -67,7 +67,7 @@ export async function getStaticProps (contxt) {
   const current = posts.find(post => post.meta.filename === contxt.params.postName)
   const next = posts.find(post => post.index === current.index + 1)
   const prev = posts.find(post => post.index === current.index - 1)
-  console.log(current, next, prev)
+
   return {
     props: {
       post: {

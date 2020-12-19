@@ -90,4 +90,75 @@ export default function Home ({ posts }) {
 
 打开页面，发现样式生效，添加tailwindcss成功。
 
+# 项目部署
 
+考虑到以后会用到next.js的其他能力，这里还是打算以node.js应用的部署方式进行部署。
+
+下边，我将介绍几种不同的方式。
+
+## 本地手动触发部署
+
+1. 安装 pm2 依赖
+
+```
+yarn add pm2 -D
+```
+
+2. 在跟目录下创建文件`ecosystem.config.js`，并输入以下内容：
+
+```js
+module.exports = {
+  apps : [{
+    name: 'ssg-blog',
+    script: 'npm',
+    args: 'start'
+  }],
+
+  deploy : {
+    production : {
+      // 服务器系统的用户名
+      user : `${xxx}`,
+      // 你服务器ip或者域名
+      host : `${xxxx}`,
+      // 远程仓库分支
+      ref  : `origin/main`,
+      // 远程仓库地址
+      repo : `${xxxx}`,
+      // 项目部署的目录路径
+      path : `${xxx}`,
+      'pre-deploy': 'git pull',
+      'post-setup': 'yarn install && yarn run build && pm2 start ecosystem.config.js --env production',
+      'post-deploy' : 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production'
+    }
+  }
+};
+```
+
+3. 添加本地主机的 `ssh` 公钥 => 服务器的 `ssh` 目录下的 `authorized_keys` 文件中
+
+```shell
+ssh-copy-id -i .ssh/id_rsa.pub  服务器用户名字@xxx.xxx.xxx.xxx
+```
+
+关于如何生成 `ssh` 公钥，请自行百度搜索
+
+4. 在package.json中添加一行 `scripts` :
+
+```json
+{
+  "scripts": {
+    "deploy:setup": "pm2 deploy ecosystem.config.js production setup",
+    "deploy": "pm2 deploy ecosystem.config.js production update"
+  }
+}
+```
+
+```shell
+# 首次初始化
+
+npm run deploy:setup
+
+# 以后更新
+
+npm run deploy
+```
