@@ -13,7 +13,7 @@ const TopProgressBar = dynamic(
 
 function MyApp({ Component, pageProps }) {
   return <>
-    <div>
+    <div className={`min-h-full h-full`}>
       <TopProgressBar></TopProgressBar> 
       <Component {...pageProps} />
     </div>
