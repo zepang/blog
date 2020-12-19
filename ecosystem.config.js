@@ -12,6 +12,7 @@ module.exports = {
       ref  : 'origin/main',
       repo : 'https://github.com/zepang/blog.git',
       path : '/root/projects/ssg-blog',
+      'pre-deploy': 'git pull',
       'pre-deploy-local': '',
       'post-setup': 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production',
       'post-deploy' : 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production',
