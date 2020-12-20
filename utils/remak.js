@@ -5,6 +5,8 @@ var parse = require('remark-parse')
 var stringify = require('remark-stringify')
 var toVfile = require('to-vfile')
 var html = require('remark-html')
+var visit = require('unist-util-visit')
+var jsYaml = require('js-yaml')
 
 function toc(options) {
   var settings = options || {}
@@ -35,6 +37,16 @@ function toc(options) {
     let tocVfile = unified().use(parse).use(stringify).use(html).processSync(unified().use(stringify).stringify(result.map))
     
     vfile.toc = tocVfile.contents || ''
+  }
+}
+
+function frontmatterAttacher() {
+  return function (tree, vfile) {
+    visit(tree, 'yaml', (node) => {
+      if (node.value) {
+        vfile.frontmatter = jsYaml.safeLoad(node.value)
+      }
+    })
   }
 }
 
@@ -77,5 +89,6 @@ function rmTocHeadingAttacher () {
 }
 
 module.exports = {
-  toc
+  toc,
+  frontmatterAttacher
 }

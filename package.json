@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "run-p next:dev watch",
+    "next:dev": "next dev",
     "build": "next build && next export",
     "start": "next start",
     "deploy:setup": "pm2 deploy ecosystem.config.js production setup",
-    "deploy": "pm2 deploy ecosystem.config.js production update"
+    "deploy": "pm2 deploy ecosystem.config.js production update",
+    "watch": "node ./watch.js"
   },
   "dependencies": {
     "front-matter": "^4.0.2",
@@ -24,8 +26,12 @@
     "tailwindcss": "^2.0.1"
   },
   "devDependencies": {
+    "chokidar": "^3.4.3",
+    "debounce": "^1.2.0",
+    "fs-extra": "^9.0.1",
     "js-yaml": "^3.14.1",
     "mdast-util-toc": "^5.1.0",
+    "npm-run-all": "^4.1.5",
     "pm2": "^4.5.1",
     "postcss": "^8.1.13",
     "postcss-loader": "^4.1.0",
