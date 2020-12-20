@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "js-yaml": "^3.14.1",
+    "mdast-util-toc": "^5.1.0",
     "pm2": "^4.5.1",
     "postcss": "^8.1.13",
     "postcss-loader": "^4.1.0",
@@ -36,6 +37,7 @@
     "remark-toc": "^7.0.0",
     "to-vfile": "^6.1.0",
     "unified": "^9.2.0",
+    "unist-builder": "^2.0.3",
     "unist-util-visit": "^2.0.3",
     "vfile-reporter": "^6.0.2"
   }

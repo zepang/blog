@@ -3536,7 +3536,7 @@ mdast-util-to-string@^2.0.0:
   resolved "https://registry.npm.taobao.org/mdast-util-to-string/download/mdast-util-to-string-2.0.0.tgz#b8cfe6a713e1091cb5b728fc48885a4767f8b97b"
   integrity sha1-uM/mpxPhCRy1tyj8SIhaR2f4uXs=
 
-mdast-util-toc@^5.0.0:
+mdast-util-toc@^5.0.0, mdast-util-toc@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npm.taobao.org/mdast-util-toc/download/mdast-util-toc-5.1.0.tgz#3af0f9c9a764b993538af03f1f79f4e3cec22736"
   integrity sha1-OvD5yadkuZNTivA/H3n0487CJzY=
@@ -6307,7 +6307,7 @@ unique-slug@^2.0.0:
   dependencies:
     imurmurhash "^0.1.4"
 
-unist-builder@^2.0.0:
+unist-builder@^2.0.0, unist-builder@^2.0.3:
   version "2.0.3"
   resolved "https://registry.npm.taobao.org/unist-builder/download/unist-builder-2.0.3.tgz#77648711b5d86af0942f334397a33c5e91516436"
   integrity sha1-d2SHEbXYavCULzNDl6M8XpFRZDY=

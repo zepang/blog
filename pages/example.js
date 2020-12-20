@@ -10,7 +10,7 @@ var html = require('remark-html')
 var prism = require('remark-prism')
 var visit = require('unist-util-visit')
 // var toc = require('remark-toc')
-var { toc } = require('../utils/remak-toc')
+var { toc } = require('../utils/remak')
 import 'prismjs/themes/prism-tomorrow.css'
 
 
