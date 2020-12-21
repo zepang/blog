@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "run-p next:dev watch",
+    "dev": "run-p build-summary:dev next:dev ",
     "next:dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
+    "build:production": "run-s build-summary build",
     "start": "next start",
     "deploy:setup": "pm2 deploy ecosystem.config.js production setup",
     "deploy": "pm2 deploy ecosystem.config.js production update",
-    "watch": "node ./watch.js"
+    "build-summary:dev": "npm run build-summary --development",
+    "build-summary": "node ./build-summary.js"
   },
   "dependencies": {
     "front-matter": "^4.0.2",

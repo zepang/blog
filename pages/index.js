@@ -3,7 +3,6 @@ import usePagination from '../hooks/usePagination'
 import { useEffect , useState } from 'react'
 import Loading from '../components/Loading'
 import Layout from '../components/Layout'
-const allMdFile = require('../summary.json')
 
 export default function Home ({ posts }) {
   const { next, maxPage, currentPage, getPosts } = usePagination(posts, 8)
@@ -14,6 +13,7 @@ export default function Home ({ posts }) {
   let [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log(11111)
     const intersectionObserver = new IntersectionObserver(
       async entries => {
         const curY = entries[0].boundingClientRect.y
@@ -80,6 +80,7 @@ export default function Home ({ posts }) {
 }
 
 export async function getStaticProps () {
+  const allMdFile = require('../summary.json')
   return {
     props: {
       posts: allMdFile
