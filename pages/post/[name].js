@@ -7,12 +7,22 @@ import styles from '../../styles/post.module.scss'
 import 'prismjs/themes/prism-tomorrow.css'
 const allMdFile = require('../../summary.json')
 
-export default function post ({ post = {} }) {
+export default function post () {
   const router = useRouter()
+
+  let next, prev
+
+  let current = allMdFile.find(file => file.name === router.query.name)
+
+  if (current.prev) {
+    prev = allMdFile.find(file => file.name === current.prev.name)
+  }
+
+  if (current.next) {
+    next = allMdFile.find(file => file.name === current.next.name)
+  }
   const [loading, setLoading] = useState(true)
   const oldTimeStamp = Date.now()
-
-  const { contents, next, prev } = post
 
   useEffect(() => {
     const newTimeStamp = Date.now()
@@ -30,19 +40,19 @@ export default function post ({ post = {} }) {
   return (
     loading ? (<PageLoading></PageLoading>) : (<Layout>
        <div className={`pt-8 mb-24`}>
-          <h1 className={`py-8 text-6xl font-bold tracking-widest`}>#{router.query.name}</h1>
+          <h1 className={`py-8 text-6xl font-bold tracking-widest`}>#{current?.frontmatter?.title}</h1>
             <div id={`article`} className={`px-6`}>
             {/* {
               current && current.content && (<ReactMarkdown source={current.content} renderers={{ code: CodeBlock }}></ReactMarkdown>)
             } */}
-            <div dangerouslySetInnerHTML={{ __html: contents }}></div>
+            <div dangerouslySetInnerHTML={{ __html: current?.contents }}></div>
           </div>
           <div className={`flex justify-between items-center px-6 py-12`}>
             <div className={`${styles.prevPost}`}>
               {
                 prev && (
-                  <Link href={`/post/${prev}`}>
-                    <div className={`font-bold text-left cursor-pointer hover:underline`}>上一篇：{prev.title}</div>
+                  <Link href={`/post/${prev?.name}`}>
+                    <div className={`font-bold text-left cursor-pointer hover:underline`}>上一篇：{prev?.frontmatter?.title}</div>
                   </Link>
                 )
               }
@@ -50,8 +60,8 @@ export default function post ({ post = {} }) {
             <div className={`${styles.nextPost}`}>
               {
                 next && (
-                  <Link href={`/post/${next}`}>
-                    <div className={`font-bold text-right cursor-pointer hover:underline`}>下一篇：{next.title}</div>
+                  <Link href={`/post/${next?.name}`}>
+                    <div className={`font-bold text-right cursor-pointer hover:underline`}>下一篇：{next?.frontmatter?.title}</div>
                   </Link>
                 )
               }
@@ -63,26 +73,8 @@ export default function post ({ post = {} }) {
 }
 
 export async function getStaticProps (contxt) {
-  let next, prev
-
-  let current = allMdFile.find(file => file.name === contxt.params.name)
-
-  if (current.prev) {
-    prev = allMdFile.find(file => file.name === current.prev.name)
-  }
-
-  if (current.next) {
-    next = allMdFile.find(file => file.name === current.next.name)
-  }
-
   return {
-    props: {
-      post: {
-        contents: current && current.contents || '',
-        next: next && next.frontmatter || '',
-        prev: prev && prev.frontmatter || ''
-      }
-    }
+    props: {}
   }
 }
 

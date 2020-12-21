@@ -9,11 +9,8 @@ async function updateSummary () {
   await fs.ensureFile(summayFile)
   let posts = await getAllMdPost()
   let jsonStr = JSON.stringify(posts, null, 2)
-  console.log(summayFile)
   fs.writeFileSync(summayFile, jsonStr)
 }
-
-console.log(process.env.npm_config_development)
 
 const handleFileChange = debounce(async () => {
   await updateSummary()
