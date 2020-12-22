@@ -1,11 +1,11 @@
-import Link from 'next/link'
 import usePagination from '../hooks/usePagination'
-import { getAllPosts } from '../utils'
-import { useEffect , useRef, useState } from 'react'
+import { useEffect , useState } from 'react'
 import Loading from '../components/Loading'
 import Layout from '../components/Layout'
+import PostListItem from '../components/PostListIem'
+const posts  = require('../summary.json')
 
-export default function Home ({ posts }) {
+export default function Home () {
   const { next, maxPage, currentPage, getPosts } = usePagination(posts, 8)
 
   let prevY = 0
@@ -49,23 +49,7 @@ export default function Home ({ posts }) {
         <ul>
           {
             currentPosts.map((post, i) => (
-              <li 
-                key={i}
-                className={`block my-8 py-8 shadow-sm bg-white hover:bg-grey-500`}
-              >
-                <Link href={`/post/${post.meta.filename}`} prefetch={false}>
-                  <a className={`h-24 flex items-stretch`}>
-                    <div className={`flex items-center px-16 border-r`}>
-                      <span className={`inline-block text-2l font-bold text-gray-500`}>{post.meta.date}</span>
-                    </div>
-                    <div className={`flex items-center px-16`}>
-                      <span className={`inline-block text-2xl font-bold tracking-widest`}>
-                        {post.meta.title}
-                      </span>
-                    </div>
-                  </a>
-                </Link>
-            </li>
+              <PostListItem post={post} key={post.name}></PostListItem>
             ))
           }
         </ul>
@@ -80,12 +64,10 @@ export default function Home ({ posts }) {
 }
 
 export async function getStaticProps () {
-  const posts = getAllPosts()
-  
+  // const allMdFile = require('../summary.json')
+  // const props = { posts: allMdFile }
   return {
-    props: {
-      posts
-    }
+    props: {}
   }
 }
 

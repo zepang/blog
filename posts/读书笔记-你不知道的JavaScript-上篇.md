@@ -2,11 +2,10 @@
 title: 你不知道的JavaScript系列摘录-上卷
 img: 'https://placem.at/places?h=140'
 date: '2019-04-29'
-categories:
 ---
 ## 第一章 作用域是什么？
 
-## toc
+# toc
 
 存储和查找变量的规则。
 
@@ -297,6 +296,4 @@ var a = 2
 foo()
 ~~~
 书上的说法是 foo 是直接使用不带任何修饰的函数引用进行调用的，因此只能使用默认绑定。
-
-
 

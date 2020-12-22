@@ -169,4 +169,9 @@ js-yaml
 remark-html
 remark-prism 
 yarn add unist-util-visit -D
+yarn add mdast-util-toc -D
+yarn add npm-run-all -D 
+yarn add -D debounce 
+yarn add fs-extra -D 
+yarn add chokidar -D   
 ```
