@@ -14,8 +14,8 @@ module.exports = {
       path : '/root/projects/ssg-blog',
       'pre-deploy': 'git pull',
       'pre-deploy-local': '',
-      'post-setup': 'yarn install && yarn run build && pm2 start ecosystem.config.js --env production',
-      'post-deploy' : 'yarn install && yarn run build && pm2 reload ecosystem.config.js --env production',
+      'post-setup': 'yarn install && yarn run build:production && pm2 start ecosystem.config.js --env production',
+      'post-deploy' : 'yarn install && yarn run build:production && pm2 reload ecosystem.config.js --env production',
       'pre-setup': ''
     }
   }
