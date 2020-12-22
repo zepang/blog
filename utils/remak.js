@@ -1,24 +1,23 @@
-var util = require('mdast-util-toc')
-var defaultHeading = 'toc|table[ -]of[ -]contents?'
-var unified = require('unified')
-var parse = require('remark-parse')
-var stringify = require('remark-stringify')
-var toVfile = require('to-vfile')
-var html = require('remark-html')
-var visit = require('unist-util-visit')
-var jsYaml = require('js-yaml')
+const util = require('mdast-util-toc')
+const defaultHeading = 'toc|table[ -]of[ -]contents?'
+const unified = require('unified')
+const parse = require('remark-parse')
+const stringify = require('remark-stringify')
+const html = require('remark-html')
+const visit = require('unist-util-visit')
+const jsYaml = require('js-yaml')
 
 function toc(options) {
-  var settings = options || {}
-  var heading = settings.heading || defaultHeading
-  var depth = settings.maxDepth || 6
-  var tight = settings.tight
-  var skip = settings.skip
+  const settings = options || {}
+  const heading = settings.heading || defaultHeading
+  const depth = settings.maxDepth || 6
+  const tight = settings.tight
+  const skip = settings.skip
 
   return transformer
 
   function transformer(node, vfile) {
-    var result = util(node, {
+    const result = util(node, {
       heading: heading,
       maxDepth: depth,
       tight: tight,
@@ -52,8 +51,8 @@ function frontmatterAttacher() {
 
 function rmTocHeadingAttacher () {
   function all(values) {
-    var result = []
-    var index = -1
+    const result = []
+    const index = -1
   
     while (++index < values.length) {
       result[index] = toString(values[index])
