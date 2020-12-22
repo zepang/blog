@@ -1,28 +1,36 @@
-#article p {
-  line-height: 1.875;
-  font-size: 1rem;
-  min-height: 2rem;
-  white-space: pre-wrap;
+#article {
+  * {
+    width: 100%;
+  }
+  p {
+    margin: 1.25rem 0;
+    line-height: 1.875;
+    font-size: 1.1rem;
+    min-height: 2rem;
+    white-space: pre-wrap;
+    color: #3c3c3c;
+    letter-spacing: 0.1px;
+  }
+
+  pre {
+    margin: 1.25rem 0;
+    border-radius: 4px;
+  }
 }
 
 #article h1 {
-  font-size: 3rem;
+  font-size: 1.8rem;
   margin: 1.25rem 0;
 }
 
 #article h2 {
-  font-size: 2.25rem;
+  font-size: 1.5rem;
   margin: 1.25rem 0;
 }
 
 #article h3 {
-  font-size: 1.875rem;
+  font-size: 1.25rem;
   margin: 1rem 0;
-}
-
-#article h4 {
-  font-size: 1.875rem;
-  margin: 0.75rem 0;
 }
 
 #article ul {

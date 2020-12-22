@@ -4,8 +4,10 @@ import Link from 'next/link'
 import Layout from '../../components/Layout'
 import PageLoading from '../../components/PageLoading'
 import styles from '../../styles/post.module.scss'
+import PostToc from '../../components/PostToc'
 import 'prismjs/themes/prism-tomorrow.css'
 const allMdFile = require('../../summary.json')
+
 
 export default function post () {
   const router = useRouter()
@@ -39,12 +41,16 @@ export default function post () {
   }, [])
   return (
     loading ? (<PageLoading></PageLoading>) : (<Layout>
-       <div className={`pt-8 mb-24`}>
-          <h1 className={`py-8 text-6xl font-bold tracking-widest`}>#{current?.frontmatter?.title}</h1>
-            <div id={`article`} className={`px-6`}>
-            {/* {
-              current && current.content && (<ReactMarkdown source={current.content} renderers={{ code: CodeBlock }}></ReactMarkdown>)
-            } */}
+       {/* <PostToc toc={current?.toc}></PostToc> */}
+       <div className={`mt-16 mb-24 px-6 py-8 bg-white shadow`}>
+          <h1 className={`py-8 px-6 text-4xl font-bold tracking-widest`}>#{current?.frontmatter?.title}</h1>
+          <div className={`py-8 px-6`}>
+            <PostToc toc={current?.toc}></PostToc>
+          </div>
+          <div id={`article`} className={`px-6`}>
+          {/* {
+            current && current.content && (<ReactMarkdown source={current.content} renderers={{ code: CodeBlock }}></ReactMarkdown>)
+          } */}
             <div dangerouslySetInnerHTML={{ __html: current?.contents }}></div>
           </div>
           <div className={`flex justify-between items-center px-6 py-12`}>

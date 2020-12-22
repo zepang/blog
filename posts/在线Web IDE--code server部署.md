@@ -10,7 +10,7 @@ date: '2020-12-17'
 
 最后，不得不用自己的服务器搭个Web IDE，以后在自己的服务器上玩了。
 
-# 准备
+# 环境准备
 
 * 一台服务器
 
@@ -18,7 +18,7 @@ date: '2020-12-17'
 
 * Nginx
 
-# code-server
+# Code Server 部署
 
 * `code-server` [https://github.com/cdr/code-server](https://github.com/cdr/code-server)
 
@@ -38,7 +38,7 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
 
 跑完之后查看一下容器是否正常运行
 
-```
+```shell
 ➜  ~ docker container ls -a
 CONTAINER ID   IMAGE                         COMMAND                  CREATED       STATUS       PORTS                    NAMES
 62d7182c80ea   codercom/code-server:latest   "/usr/bin/entrypoint…"   8 hours ago   Up 8 hours   0.0.0.0:8080->8080/tcp   code-server
@@ -62,7 +62,7 @@ location /code-server/ {
 
 打开浏览器访问 `https://example.com/code-server`，出现输入框，输入刚才设置的密码，进入IDE
 
-![]('../assets/images/vsocde-web-ide.png')
+![](/images/vscode-web-ide.png)
 
 关于code-server的配置可以查看文档或者搜索相关的文章
 

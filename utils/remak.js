@@ -1,11 +1,11 @@
 const util = require('mdast-util-toc')
-const defaultHeading = 'toc|table[ -]of[ -]contents?'
 const unified = require('unified')
 const parse = require('remark-parse')
 const stringify = require('remark-stringify')
 const html = require('remark-html')
 const visit = require('unist-util-visit')
 const jsYaml = require('js-yaml')
+const defaultHeading = 'toc|table[ -]of[ -]contents?'
 
 function toc(options) {
   const settings = options || {}
