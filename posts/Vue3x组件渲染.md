@@ -77,6 +77,8 @@ const createApp = ((...args) => {
  * render = { render, hydrate, createApp }
  */
 const render = ((...args) => {
+    // 我们使用的是vite创建的项目，createApp(App) 传入的App组件不仅是单文件导出的对象已经是经过vite转化过的对象，其内已经包含render函数
+    // 具体可以看 @vue/compiler-sfc 这个依赖 vue-loader同样用到了该依赖
     ensureRenderer().render(...args);
 });
 
@@ -352,6 +354,7 @@ function createAppAPI(render, hydrate) {
         // ...
         mount(rootContainer, isHydrate) {
             if (!isMounted) {
+                // 创建VNode
                 const vnode = createVNode(rootComponent, rootProps);
                 // store app context on the root VNode.
                 // this will be set on the root instance on initial mount.
@@ -384,5 +387,185 @@ function createAppAPI(render, hydrate) {
             }
         }
     }
+}
+```
+
+# 创建VNode
+
+```js
+function _createVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, isBlockNode = false) {
+    if (!type || type === NULL_DYNAMIC_COMPONENT) {
+        if ((process.env.NODE_ENV !== 'production') && !type) {
+            warn(`Invalid vnode type when creating vnode: ${type}.`);
+        }
+        type = Comment;
+    }
+    if (isVNode(type)) {
+        // createVNode receiving an existing vnode. This happens in cases like
+        // <component :is="vnode"/>
+        // #2078 make sure to merge refs during the clone instead of overwriting it
+        const cloned = cloneVNode(type, props, true /* mergeRef: true */);
+        if (children) {
+            normalizeChildren(cloned, children);
+        }
+        return cloned;
+    }
+    // class component normalization.
+    if (isClassComponent(type)) {
+        type = type.__vccOpts;
+    }
+    // class & style normalization.
+    if (props) {
+        // for reactive or proxy objects, we need to clone it to enable mutation.
+        if (isProxy(props) || InternalObjectKey in props) {
+            props = extend({}, props);
+        }
+        let { class: klass, style } = props;
+        if (klass && !isString(klass)) {
+            props.class = normalizeClass(klass);
+        }
+        if (isObject(style)) {
+            // reactive state objects need to be cloned since they are likely to be
+            // mutated
+            if (isProxy(style) && !isArray(style)) {
+                style = extend({}, style);
+            }
+            props.style = normalizeStyle(style);
+        }
+    }
+    // encode the vnode type information into a bitmap
+    const shapeFlag = isString(type)
+        ? 1 /* ELEMENT */
+        :  isSuspense(type)
+            ? 128 /* SUSPENSE */
+            : isTeleport(type)
+                ? 64 /* TELEPORT */
+                : isObject(type)
+                    ? 4 /* STATEFUL_COMPONENT */
+                    : isFunction(type)
+                        ? 2 /* FUNCTIONAL_COMPONENT */
+                        : 0;
+    if ((process.env.NODE_ENV !== 'production') && shapeFlag & 4 /* STATEFUL_COMPONENT */ && isProxy(type)) {
+        type = toRaw(type);
+        warn(`Vue received a Component which was made a reactive object. This can ` +
+            `lead to unnecessary performance overhead, and should be avoided by ` +
+            `marking the component with \`markRaw\` or using \`shallowRef\` ` +
+            `instead of \`ref\`.`, `\nComponent that was made reactive: `, type);
+    }
+    const vnode = {
+        __v_isVNode: true,
+        ["__v_skip" /* SKIP */]: true,
+        type,
+        props,
+        key: props && normalizeKey(props),
+        ref: props && normalizeRef(props),
+        scopeId: currentScopeId,
+        children: null,
+        component: null,
+        suspense: null,
+        ssContent: null,
+        ssFallback: null,
+        dirs: null,
+        transition: null,
+        el: null,
+        anchor: null,
+        target: null,
+        targetAnchor: null,
+        staticCount: 0,
+        shapeFlag,
+        patchFlag,
+        dynamicProps,
+        dynamicChildren: null,
+        appContext: null
+    };
+    // validate key
+    if ((process.env.NODE_ENV !== 'production') && vnode.key !== vnode.key) {
+        warn(`VNode created with invalid key (NaN). VNode type:`, vnode.type);
+    }
+    normalizeChildren(vnode, children);
+    // normalize suspense children
+    if ( shapeFlag & 128 /* SUSPENSE */) {
+        const { content, fallback } = normalizeSuspenseChildren(vnode);
+        vnode.ssContent = content;
+        vnode.ssFallback = fallback;
+    }
+    if (shouldTrack$1 > 0 &&
+        // avoid a block node from tracking itself
+        !isBlockNode &&
+        // has current parent block
+        currentBlock &&
+        // presence of a patch flag indicates this node needs patching on updates.
+        // component nodes also should always be patched, because even if the
+        // component doesn't need to update, it needs to persist the instance on to
+        // the next vnode so that it can be properly unmounted later.
+        (patchFlag > 0 || shapeFlag & 6 /* COMPONENT */) &&
+        // the EVENTS flag is only for hydration and if it is the only flag, the
+        // vnode should not be considered dynamic due to handler caching.
+        patchFlag !== 32 /* HYDRATE_EVENTS */) {
+        currentBlock.push(vnode);
+    }
+    return vnode;
+}
+```
+
+* VNode的结构
+
+```js
+const vnode = {
+    __v_isVNode: true,
+    ["__v_skip" /* SKIP */]: true,
+    type,
+    props,
+    key: props && normalizeKey(props),
+    ref: props && normalizeRef(props),
+    scopeId: currentScopeId,
+    children: null,
+    component: null,
+    suspense: null,
+    ssContent: null,
+    ssFallback: null,
+    dirs: null,
+    transition: null,
+    el: null,
+    anchor: null,
+    target: null,
+    targetAnchor: null,
+    staticCount: 0,
+    shapeFlag,
+    patchFlag,
+    dynamicProps,
+    dynamicChildren: null,
+    appContext: null
+};
+```
+
+## SharpeFlags
+
+`https://github.com/vuejs/vue-next/blob/master/packages/shared/src/shapeFlags.ts`:
+
+```js
+export const enum ShapeFlags {
+  // html 或 svg 标签
+  ELEMENT = 1,
+  // 函数式组件
+  FUNCTIONAL_COMPONENT = 1 << 1,
+  // 普通有状态组件
+  STATEFUL_COMPONENT = 1 << 2,
+  // 子节点是纯文本
+  TEXT_CHILDREN = 1 << 3,
+  // 子节点是数组
+  ARRAY_CHILDREN = 1 << 4,
+  // 子节点是 slots
+  SLOTS_CHILDREN = 1 << 5,
+  // Portal
+  PORTAL = 1 << 6,
+  // Suspense
+  SUSPENSE = 1 << 7,
+  // 需要被keepAlive的有状态组件
+  COMPONENT_SHOULD_KEEP_ALIVE = 1 << 8,
+  // 已经被keepAlive的有状态组件
+  COMPONENT_KEPT_ALIVE = 1 << 9,
+  // 有状态组件和函数式组件都是“组件”，用 COMPONENT 表示
+  COMPONENT = ShapeFlags.STATEFUL_COMPONENT | ShapeFlags.FUNCTIONAL_COMPONENT
 }
 ```
