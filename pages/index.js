@@ -45,7 +45,7 @@ export default function Home () {
       <div className={`my-8 flex items-center`}>
         <h2 className={`text-2xl leading-8 font-bold tracking-tight`}>#文章列表</h2>
       </div>
-      <div className={`container`}>
+      <div>
         <ul>
           {
             currentPosts.map((post, i) => (

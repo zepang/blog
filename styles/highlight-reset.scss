@@ -1,7 +1,8 @@
 #article {
   * {
-    width: 100%;
+    word-break: break-all;
   }
+  
   p {
     margin: 1.25rem 0;
     line-height: 1.875;

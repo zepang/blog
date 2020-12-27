@@ -51,7 +51,7 @@ export default function post () {
   return (
     loading ? (<PageLoading></PageLoading>) : (<Layout>
        {/* <PostToc toc={current?.toc}></PostToc> */}
-       <div className={`mt-16 mb-24 px-6 py-8 bg-white shadow`}>
+       <div className={`mt-16 mb-24 sm:px-6 py-8 bg-white shadow`}>
           <h1 className={`py-8 px-6 text-4xl font-bold tracking-widest`}>#{current?.frontmatter?.title}</h1>
           <div id={`toc-wrapper`} className={`py-8 px-6`}>
             <PostToc toc={current?.toc}></PostToc>
