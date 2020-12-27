@@ -6,6 +6,7 @@ import PageLoading from '../../components/PageLoading'
 import styles from '../../styles/post.module.scss'
 import PostToc from '../../components/PostToc'
 import 'prismjs/themes/prism-tomorrow.css'
+
 const allMdFile = require('../../summary.json')
 
 
@@ -38,13 +39,21 @@ export default function post () {
       setLoading(false)
       clearTimeout(timer)
     }, delay)
+
+    const SmoothScroll = require('smooth-scroll')
+
+    new SmoothScroll('#toc-wrapper a[href*="#"]', {
+      updateURL: false,
+      offset: 80,
+      speed: 300
+    })
   }, [])
   return (
     loading ? (<PageLoading></PageLoading>) : (<Layout>
        {/* <PostToc toc={current?.toc}></PostToc> */}
        <div className={`mt-16 mb-24 px-6 py-8 bg-white shadow`}>
           <h1 className={`py-8 px-6 text-4xl font-bold tracking-widest`}>#{current?.frontmatter?.title}</h1>
-          <div className={`py-8 px-6`}>
+          <div id={`toc-wrapper`} className={`py-8 px-6`}>
             <PostToc toc={current?.toc}></PostToc>
           </div>
           <div id={`article`} className={`px-6`}>
