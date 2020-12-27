@@ -9,6 +9,7 @@ const stringify = require('remark-stringify')
 const frontmatter = require('remark-frontmatter')
 const html = require('remark-html')
 const prism = require('remark-prism')
+const slug = require('remark-slug')
 const { frontmatterAttacher, toc } = require('./remak')
 
 async function getMdPost (filename) {
@@ -16,6 +17,7 @@ async function getMdPost (filename) {
     unified()
     .use(parse)
     .use(stringify)
+    .use(slug)
     .use(prism, {})
     .use(html)
     .use(frontmatter, ['yaml', 'toml'])

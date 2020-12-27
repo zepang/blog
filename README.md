@@ -174,4 +174,5 @@ yarn add npm-run-all -D
 yarn add -D debounce 
 yarn add fs-extra -D 
 yarn add chokidar -D   
+yarn add remark-slug -D
 ```
