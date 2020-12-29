@@ -10,7 +10,7 @@ const defaultHeading = 'toc|table[ -]of[ -]contents?'
 function toc(options) {
   const settings = options || {}
   const heading = settings.heading || defaultHeading
-  const depth = settings.maxDepth || 6
+  const depth = settings.maxDepth || 3
   const tight = settings.tight
   const skip = settings.skip
 
