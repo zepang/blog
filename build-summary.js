@@ -25,7 +25,7 @@ const handleFileChange = debounce(async (name) => {
 if (process.env.npm_config_development) {
   chokidar.watch(path.resolve(__dirname, 'posts'), {
     ignoreInitial: true
-  }).on('all', async (event, filePath) => {
+  }).on('change', async (event, filePath) => {
     console.log(`${event} => `, filePath)
     const name = path.basename(filePath, path.extname(filePath))
     handleFileChange(name)
