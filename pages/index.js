@@ -49,7 +49,7 @@ export default function Home () {
         <ul>
           {
             currentPosts.map((post, i) => (
-              <PostListItem post={post} key={post.name}></PostListItem>
+              <PostListItem post={post} key={post.id}></PostListItem>
             ))
           }
         </ul>

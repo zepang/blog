@@ -11,6 +11,7 @@ const html = require('remark-html')
 const prism = require('remark-prism')
 const slug = require('remark-slug')
 const { frontmatterAttacher, toc } = require('./remak')
+const md5 = require('md5')
 
 async function getMdPost (filename) {
   return new Promise((resolve, reject) => {
@@ -50,14 +51,14 @@ async function getAllMdPost () {
   allPost = allPost.map((item, index, arr) => {
     let prev = arr[index - 1]
     let next = arr[index + 1]
-    let post = { ...item, id: index }
+    let post = { ...item, id: md5(item.name) }
 
     if (prev) {
-      post.prev = { name: prev.name }
+      post.prev = { name: prev.name, id: md5(prev.name) }
     }
 
     if (next) {
-      post.next = { name: next.name }
+      post.next = { name: next.name, id: md5(next.name) }
     }
 
     return post

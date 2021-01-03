@@ -5,7 +5,7 @@ export default function PostListItem ({post}) {
     <li 
       className={`px-6 sm:px-8 block my-8 py-8 shadow-sm bg-white hover:bg-grey-500 xl:px-16`}
     >
-      <Link href={`/post/${post.name}`}>
+      <Link href={`/post/${post.id}`}>
         <a className={`min-h-24 sm:h-24 flex sm:items-stretch flex-col-reverse`}>
           <div className={`flex items-center`}>
             <span className={`inline-block text-2l font-bold text-gray-500`}>{post.frontmatter?.date}</span>

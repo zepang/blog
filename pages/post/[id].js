@@ -15,14 +15,14 @@ export default function post () {
 
   let next, prev
 
-  let current = allMdFile.find(file => file.name === router.query.name)
+  let current = allMdFile.find(file => file.id === router.query.id)
 
   if (current.prev) {
-    prev = allMdFile.find(file => file.name === current.prev.name)
+    prev = allMdFile.find(file => file.id === current.prev.id)
   }
 
   if (current.next) {
-    next = allMdFile.find(file => file.name === current.next.name)
+    next = allMdFile.find(file => file.id === current.next.id)
   }
   const [loading, setLoading] = useState(true)
   const oldTimeStamp = Date.now()
@@ -66,7 +66,7 @@ export default function post () {
             <div className={`${styles.prevPost}`}>
               {
                 prev && (
-                  <Link href={`/post/${prev?.name}`}>
+                  <Link href={`/post/${prev?.id}`}>
                     <div className={`font-bold text-left cursor-pointer hover:underline`}>上一篇：{prev?.frontmatter?.title}</div>
                   </Link>
                 )
@@ -75,7 +75,7 @@ export default function post () {
             <div className={`${styles.nextPost}`}>
               {
                 next && (
-                  <Link href={`/post/${next?.name}`}>
+                  <Link href={`/post/${next?.id}`}>
                     <div className={`font-bold text-right cursor-pointer hover:underline`}>下一篇：{next?.frontmatter?.title}</div>
                   </Link>
                 )
@@ -94,11 +94,11 @@ export async function getStaticProps (contxt) {
 }
 
 export async function getStaticPaths () {
-  const paths = allMdFile.map(({ name }) => {
+  const paths = allMdFile.map(({ id }) => {
     return {
       params: { 
         // 兼容中文命名需要使用 encodeURIComponent，否则无法根据URL的文件名找到对应文件
-        name: encodeURIComponent(name) 
+        id: encodeURIComponent(id) 
       }
     }
   })
