@@ -1,5 +1,5 @@
 ---
-title: vite 原理解析(2)-重写npm模块和@modules
+title: vite 原理解析(2)-重写npm模块(moduleRewritePlugin)和@modules
 date: '2020-09-18'
 ---
 
