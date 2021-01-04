@@ -1,6 +1,6 @@
 ---
 title: vite 原理解析(2)-重写npm模块(moduleRewritePlugin)和@modules
-date: '2020-09-18'
+date: '2020-09-28'
 ---
 
 # toc

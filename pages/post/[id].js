@@ -62,7 +62,7 @@ export default function post () {
           } */}
             <div dangerouslySetInnerHTML={{ __html: current?.contents }}></div>
           </div>
-          <div className={`flex justify-between items-center px-6 py-12`}>
+          <div className={`flex justify-between items-start px-6 py-12`}>
             <div className={`${styles.prevPost}`}>
               {
                 prev && (
