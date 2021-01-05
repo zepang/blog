@@ -198,6 +198,7 @@ const resolveImport = (root, importer, id, resolver, timestamp) => {
         // 2. resolve dir index and extensions.
         pathname = resolver.normalizePublicPath(pathname);
         // 3. mark non-src imports
+        // 如果不满足 /\.(?:(?:j|t)sx?|vue)$|\.mjs$/ 则会在 import 'xxxx?import' 路径加上query
         if (!query && path_1.default.extname(pathname) && !resolver_1.jsSrcRE.test(pathname)) {
             query += `?import`;
         }

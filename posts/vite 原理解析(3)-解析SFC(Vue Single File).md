@@ -221,3 +221,23 @@ export const vuePlugin: ServerPlugin = ({
 }
 ```
 
+# vuePlugin 处理 App.vue 请求的过程
+
+1. 前端加载 `App.vue` 资源
+
+```js
+import App from 'App.vue'
+```
+
+2. vite 服务过滤出 `.vue` 文件的请求
+
+```js
+if (!ctx.path.endsWith('.vue') && !ctx.vue) {
+  return next()
+}
+
+// 处理 App.vue 文件逻辑
+```
+
+3. 
+
