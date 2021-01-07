@@ -7,12 +7,15 @@ date: '2019-12-16'
 
 旨在通过项目快速上手标题提到的几个技术内容
 
-# 准备
+# 环境准备
 
-* 需要node环境，版本大于10.0，建议使用nvm来安装node
-* 包管理器可以是npm或者yarn
-* vscode编辑器
-* 源码：[https://github.com/zepang/practice-demo-with-graphql](https://github.com/zepang/practice-demo-with-graphql)
+- 需要node环境，版本大于10.0，建议使用nvm来安装node
+
+- 包管理器可以是npm或者yarn
+
+- vscode编辑器
+
+- 源码：[https://github.com/zepang/practice-demo-with-graphql](https://github.com/zepang/practice-demo-with-graphql)
 
 # 以下是 React + graphql + apollo + node + express 在项目中的逻辑关系
 
