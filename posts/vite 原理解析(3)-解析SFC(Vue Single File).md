@@ -223,7 +223,7 @@ export const vuePlugin: ServerPlugin = ({
 
 # vuePlugin 处理 App.vue 请求的过程
 
-1. 前端加载 `App.vue` 资源
+1. 前端加载 `App.vue` 资源 -> 第一次加载
 
 ```js
 import App from 'App.vue'
@@ -239,5 +239,387 @@ if (!ctx.path.endsWith('.vue') && !ctx.vue) {
 // 处理 App.vue 文件逻辑
 ```
 
-3. 
+3. parseSFC处理`App.vue`文件 -> descriptor
 
+```js
+const descriptor = await parseSFC(root, filePath, ctx.body);
+
+// parseSFC主要逻辑：
+
+// 1. 读取`App.vue`文件
+
+// 2. 获取`@vue/compiler-sfc`
+
+// 3. 调用`@vue/compiler-sfc`的`parse`方法 -> descriptor
+
+// 4. const descriptor = {
+//       filename,
+//       source,
+//       template: null,
+//       script: null,
+//       scriptSetup: null,
+//       styles: [],
+//       customBlocks: [],
+//       cssVars: []
+//   };
+``` 
+
+比较好奇`@vue/compiler-sfc`做了什么，大概喵了一下：
+
+- 调用 `@vue/compiler-dom（其实内部调用的是@vue/compiler-core）` 的 `parse` 生成 `ast` 对象，大概是下边的结构：
+
+```js
+// @vue/compiler-core 的  createRoot 函数
+function createRoot(children, loc = locStub) {
+    return {
+        type: 0 /* ROOT */,
+        children,
+        helpers: [],
+        components: [],
+        directives: [],
+        hoists: [],
+        imports: [],
+        cached: 0,
+        temps: 0,
+        codegenNode: undefined,
+        loc
+    };
+}
+```
+
+- 根据`ast`生成 descriptor.template, descriptor.script, descriptor.scriptSetup, descriptor.styles，descriptor.customBlocks，包含如下属性：
+
+```typescript
+interface block = {
+  attrs,
+  content,
+  type,
+  loc 
+}
+```
+
+具体的代码：
+
+```js
+ast.children.forEach(node => {
+    if (node.type !== 1 /* ELEMENT */) {
+        return;
+    }
+    if (!node.children.length && !hasSrc(node)) {
+        return;
+    }
+    switch (node.tag) {
+        case 'template':
+            if (!descriptor.template) {
+                const templateBlock = (descriptor.template = createBlock(node, source, false));
+                templateBlock.ast = node;
+            }
+            else {
+                errors.push(createDuplicateBlockError(node));
+            }
+            break;
+        case 'script':
+            const scriptBlock = createBlock(node, source, pad);
+            const isSetup = !!scriptBlock.attrs.setup;
+            if (isSetup && !descriptor.scriptSetup) {
+                descriptor.scriptSetup = scriptBlock;
+                break;
+            }
+            if (!isSetup && !descriptor.script) {
+                descriptor.script = scriptBlock;
+                break;
+            }
+            errors.push(createDuplicateBlockError(node, isSetup));
+            break;
+        case 'style':
+            const styleBlock = createBlock(node, source, pad);
+            if (styleBlock.attrs.vars) {
+                errors.push(new SyntaxError(`<style vars> has been replaced by a new proposal: ` +
+                    `https://github.com/vuejs/rfcs/pull/231`));
+            }
+            descriptor.styles.push(styleBlock);
+            break;
+        default:
+            descriptor.customBlocks.push(createBlock(node, source, pad));
+            break;
+    }
+});
+```
+
+- 为 descriptor.template, descriptor.script, descriptor.scriptSetup, descriptor.styles，descriptor.customBlocks 生成sourcemap
+
+- 获取 css 变量 -> descriptor.cssVars
+
+4. 第一次加载的`url`不带`query.type`, 经过 `compileSFCMain` 处理之后直接就返回了结果
+
+```js
+if (!query.type) {
+    // watch potentially out of root vue file since we do a custom read here
+    utils_1.watchFileIfOutOfRoot(watcher, root, filePath);
+    if (descriptor.script && descriptor.script.src) {
+        filePath = await resolveSrcImport(root, descriptor.script, ctx, resolver);
+    }
+    ctx.type = 'js';
+    const { code, map } = await compileSFCMain(descriptor, filePath, publicPath, root);
+    ctx.body = code;
+    ctx.map = map;
+    return etagCacheCheck(ctx);
+}
+```
+
+`compileSFCMain` 会根据上边 descriptor.template, descriptor.script, descriptor.scriptSetup, descriptor.styles，descriptor.customBlocks 代码块做不同处理:
+
+```js
+async function compileSFCMain(descriptor, filePath, publicPath, root) {
+    let cached = exports.vueCache.get(filePath);
+    if (cached && cached.script) {
+        return cached.script;
+    }
+    const id = hash_sum_1.default(publicPath);
+    let code = ``;
+    let content = ``;
+    let map;
+    let script = descriptor.script;
+    const compiler = resolveVue_1.resolveCompiler(root);
+
+    // descriptor.script代码块
+
+    if ((descriptor.script || descriptor.scriptSetup) && compiler.compileScript) {
+        try {
+            script = compiler.compileScript(descriptor, {
+                id
+            });
+        }
+        catch (e) {
+            console.error(chalk_1.default.red(`\n[vite] SFC <script setup> compilation error:\n${chalk_1.default.dim(chalk_1.default.white(filePath))}`));
+            console.error(chalk_1.default.yellow(e.message));
+        }
+    }
+    if (script) {
+        content = script.content;
+        map = script.map;
+        if (script.lang === 'ts') {
+            const res = await esbuildService_1.transform(content, publicPath, {
+                loader: 'ts'
+            });
+            content = res.code;
+            map = serverPluginSourceMap_1.mergeSourceMap(map, JSON.parse(res.map));
+        }
+    }
+    code += compiler_sfc_1.rewriteDefault(content, '__script');
+    let hasScoped = false;
+    let hasCSSModules = false;
+
+    // descriptor.styles代码块
+
+    if (descriptor.styles) {
+        descriptor.styles.forEach((s, i) => {
+            const styleRequest = publicPath + `?type=style&index=${i}`;
+            if (s.scoped)
+                hasScoped = true;
+            if (s.module) {
+                if (!hasCSSModules) {
+                    code += `\nconst __cssModules = __script.__cssModules = {}`;
+                    hasCSSModules = true;
+                }
+                const styleVar = `__style${i}`;
+                const moduleName = typeof s.module === 'string' ? s.module : '$style';
+                code += `\nimport ${styleVar} from ${JSON.stringify(styleRequest + '&module')}`;
+                code += `\n__cssModules[${JSON.stringify(moduleName)}] = ${styleVar}`;
+            }
+            else {
+                code += `\nimport ${JSON.stringify(styleRequest)}`;
+            }
+        });
+        if (hasScoped) {
+            code += `\n__script.__scopeId = "data-v-${id}"`;
+        }
+    }
+
+    // descriptor.customBlocks代码块
+
+    if (descriptor.customBlocks) {
+        descriptor.customBlocks.forEach((c, i) => {
+            const attrsQuery = attrsToQuery(c.attrs, c.lang);
+            const blockTypeQuery = `&blockType=${querystring_1.default.escape(c.type)}`;
+            let customRequest = publicPath + `?type=custom&index=${i}${blockTypeQuery}${attrsQuery}`;
+            const customVar = `block${i}`;
+            code += `\nimport ${customVar} from ${JSON.stringify(customRequest)}\n`;
+            code += `if (typeof ${customVar} === 'function') ${customVar}(__script)\n`;
+        });
+    }
+
+    // descriptor.template代码块
+
+    if (descriptor.template) {
+        const templateRequest = publicPath + `?type=template`;
+        code += `\nimport { render as __render } from ${JSON.stringify(templateRequest)}`;
+        code += `\n__script.render = __render`;
+    }
+    code += `\n__script.__hmrId = ${JSON.stringify(publicPath)}`;
+    code += `\ntypeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(__script.__hmrId, __script)`;
+    code += `\n__script.__file = ${JSON.stringify(filePath)}`;
+    code += `\nexport default __script`;
+    const result = {
+        code,
+        map,
+        bindings: script ? script.bindings : undefined
+    };
+    cached = cached || { styles: [], customs: [] };
+    cached.script = result;
+    exports.vueCache.set(filePath, cached);
+    return result;
+}
+```
+
+来看下对于`descriptor.script`(`<script>`)代码块的处理:
+
+```js
+ // descriptor.script代码块
+    
+if ((descriptor.script || descriptor.scriptSetup) && compiler.compileScript) {
+    try {
+        // @vue/complier-sfc 的 compileScript 函数
+        script = compiler.compileScript(descriptor, {
+            id
+        });
+    }
+    catch (e) {
+        console.error(chalk_1.default.red(`\n[vite] SFC <script setup> compilation error:\n${chalk_1.default.dim(chalk_1.default.white(filePath))}`));
+        console.error(chalk_1.default.yellow(e.message));
+    }
+}
+
+if (script) {
+    content = script.content;
+    map = script.map;
+    if (script.lang === 'ts') {
+        // 若是ts还需要调用 esbuild 进行处理
+        const res = await esbuildService_1.transform(content, publicPath, {
+            loader: 'ts'
+        });
+        content = res.code;
+        map = serverPluginSourceMap_1.mergeSourceMap(map, JSON.parse(res.map));
+    }
+}
+```
+
+`@vue/compiler-sfc` 的 `compileScript`会调用`@babel/parser`去处理`<script>`的代码，此外，还可以留意下 `analyzeBindingsFromOptions` 函数
+
+由于`compileScript`函数代码过多，这里仅粘贴部分代码：
+
+```js
+var parser = require('@babel/parser');
+
+function compileScript(sfc, options) { 
+  // ...
+  if (!scriptSetup) {
+        if (!script) {
+            throw new Error(`[@vue/compiler-sfc] SFC contains no <script> tags.`);
+        }
+        if (scriptLang && scriptLang !== 'ts') {
+            // do not process non js/ts script blocks
+            return script;
+        }
+        try {
+            const scriptAst = parser.parse(script.content, {
+                plugins,
+                sourceType: 'module'
+            }).program.body;
+            const bindings = analyzeScriptBindings(scriptAst);
+            const needRewrite = cssVars.length || hasInheritAttrsFlag;
+            let content = script.content;
+            if (needRewrite) {
+                content = rewriteDefault(content, `__default__`, plugins);
+                if (cssVars.length) {
+                    content += genNormalScriptCssVarsCode(cssVars, bindings, scopeId, !!options.isProd);
+                }
+                if (hasInheritAttrsFlag) {
+                    content += `__default__.inheritAttrs = false`;
+                }
+                content += `\nexport default __default__`;
+            }
+            return {
+                ...script,
+                content,
+                bindings,
+                scriptAst
+            };
+        }
+        catch (e) {
+            // silently fallback if parse fails since user may be using custom
+            // babel syntax
+            return script;
+        }
+    }
+  // ...
+}
+
+function analyzeScriptBindings(ast) {
+    for (const node of ast) {
+        if (node.type === 'ExportDefaultDeclaration' &&
+            node.declaration.type === 'ObjectExpression') {
+            return analyzeBindingsFromOptions(node.declaration);
+        }
+    }
+    return {};
+}
+
+function analyzeBindingsFromOptions(node) {
+    const bindings = {};
+    for (const property of node.properties) {
+        if (property.type === 'ObjectProperty' &&
+            !property.computed &&
+            property.key.type === 'Identifier') {
+            // props
+            if (property.key.name === 'props') {
+                // props: ['foo']
+                // props: { foo: ... }
+                for (const key of getObjectOrArrayExpressionKeys(property.value)) {
+                    bindings[key] = "props" /* PROPS */;
+                }
+            }
+            // inject
+            else if (property.key.name === 'inject') {
+                // inject: ['foo']
+                // inject: { foo: {} }
+                for (const key of getObjectOrArrayExpressionKeys(property.value)) {
+                    bindings[key] = "options" /* OPTIONS */;
+                }
+            }
+            // computed & methods
+            else if (property.value.type === 'ObjectExpression' &&
+                (property.key.name === 'computed' || property.key.name === 'methods')) {
+                // methods: { foo() {} }
+                // computed: { foo() {} }
+                for (const key of getObjectExpressionKeys(property.value)) {
+                    bindings[key] = "options" /* OPTIONS */;
+                }
+            }
+        }
+        // setup & data
+        else if (property.type === 'ObjectMethod' &&
+            property.key.type === 'Identifier' &&
+            (property.key.name === 'setup' || property.key.name === 'data')) {
+            for (const bodyItem of property.body.body) {
+                // setup() {
+                //   return {
+                //     foo: null
+                //   }
+                // }
+                if (bodyItem.type === 'ReturnStatement' &&
+                    bodyItem.argument &&
+                    bodyItem.argument.type === 'ObjectExpression') {
+                    for (const key of getObjectExpressionKeys(bodyItem.argument)) {
+                        bindings[key] =
+                            property.key.name === 'setup'
+                                ? "setup-maybe-ref" /* SETUP_MAYBE_REF */
+                                : "data" /* DATA */;
+                    }
+                }
+            }
+        }
+    }
+    return bindings;
+}
+```
