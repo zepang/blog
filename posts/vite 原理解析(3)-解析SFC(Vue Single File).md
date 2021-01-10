@@ -623,3 +623,68 @@ function analyzeBindingsFromOptions(node) {
     return bindings;
 }
 ```
+
+
+经过一系列的拼接之后，返回给客户端，需要注意的是这一阶段返回的内容还会经过`moduleRewritePlugin`的处理
+
+最终返回如下内容：
+
+```js
+import HelloWorld from '/src/components/HelloWorld.vue'
+
+const __script = {
+    name: 'App',
+    components: {
+        HelloWorld
+    }
+}
+
+import "/src/App.vue?type=style&index=0"
+import "/src/App.vue?type=style&index=1"
+import {render as __render} from "/src/App.vue?type=template"
+__script.render = __render
+__script.__hmrId = "/src/App.vue"
+typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(__script.__hmrId, __script)
+__script.__file = "/mnt/c/Users/zpo/learning-vue3x/src/App.vue"
+export default __script
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9tbnQvYy9Vc2Vycy96cG8vbGVhcm5pbmctdnVlM3gvc3JjL0FwcC52dWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQU9BLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDOztBQUVuRCxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFFO0VBQ2IsQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztFQUNYLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBRTtJQUNWLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO0VBQ1g7QUFDRiIsImZpbGUiOiIvbW50L2MvVXNlcnMvenBvL2xlYXJuaW5nLXZ1ZTN4L3NyYy9BcHAudnVlIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIjx0ZW1wbGF0ZT5cbiAgPCEtLSA8aW1nIGFsdD1cIlZ1ZSBsb2dvXCIgc3JjPVwiLi9hc3NldHMvbG9nby5wbmdcIiAvPlxuICA8SGVsbG9Xb3JsZCBtc2c9XCJIZWxsbyBWdWUgMy4wICsgVml0ZVwiIC8+IC0tPlxuICA8ZGl2PjwvZGl2PlxuPC90ZW1wbGF0ZT5cblxuPHNjcmlwdD5cbmltcG9ydCBIZWxsb1dvcmxkIGZyb20gJy4vY29tcG9uZW50cy9IZWxsb1dvcmxkLnZ1ZSdcblxuZXhwb3J0IGRlZmF1bHQge1xuICBuYW1lOiAnQXBwJyxcbiAgY29tcG9uZW50czoge1xuICAgIEhlbGxvV29ybGRcbiAgfVxufVxuPC9zY3JpcHQ+XG5cbjxzdHlsZT5cbmh0bWwsIGJvZHkge1xuICBtYXJnaW46IDA7XG59XG48L3N0eWxlPlxuXG48c3R5bGU+XG5odG1sLCBib2R5IHtcbiAgcGFkZGluZzogMDtcbn1cbjwvc3R5bGU+XG4iXX0=
+```
+
+5. 通过上边的 `compileSFCMain` 函数和`App.vue`第一次请求返回的内容可以发现，`<style>` `<template>` 块的具体处理并没有在该函数内处理，而是通过`import`导入`App.vue?type=${type}`再次发起了请求
+
+首先来看下`type=style`的处理：
+
+```js
+async function compileSFCStyle(root, style, index, filePath, publicPath, { cssPreprocessOptions, cssModuleOptions }) {
+    let cached = exports.vueCache.get(filePath);
+    const cachedEntry = cached && cached.styles && cached.styles[index];
+    if (cachedEntry) {
+        debug(`${publicPath} style cache hit`);
+        return cachedEntry;
+    }
+    const start = Date.now();
+    const { generateCodeFrame } = resolveVue_1.resolveCompiler(root);
+    const resource = filePath + `?type=style&index=${index}`;
+    const result = (await cssUtils_1.compileCss(root, publicPath, {
+        source: style.content,
+        filename: resource,
+        id: ``,
+        scoped: style.scoped != null,
+        modules: style.module != null,
+        // @ts-ignore TODO @deprecated
+        vars: style.vars != null,
+        preprocessLang: style.lang,
+        preprocessOptions: cssPreprocessOptions,
+        modulesOptions: cssModuleOptions
+    }));
+    cssUtils_1.recordCssImportChain(result.dependencies, resource);
+    // ...
+    result.code = await cssUtils_1.rewriteCssUrls(result.code, publicPath);
+    cached = cached || { styles: [], customs: [] };
+    cached.styles[index] = result;
+    exports.vueCache.set(filePath, cached);
+    debug(`${publicPath} style compiled in ${Date.now() - start}ms`);
+    return result;
+}
+```
+
