@@ -652,7 +652,74 @@ export default __script
 
 5. 通过上边的 `compileSFCMain` 函数和`App.vue`第一次请求返回的内容可以发现，`<style>` `<template>` 块的具体处理并没有在该函数内处理，而是通过`import`导入`App.vue?type=${type}`再次发起了请求
 
-首先来看下`type=style`的处理：
+`type=template`：
+
+```js
+function compileSFCTemplate(root, template, filePath, publicPath, scoped, bindingMetadata, vueSpecifier, { vueCompilerOptions, vueTransformAssetUrls = {}, vueTemplatePreprocessOptions = {} }) {
+    let cached = exports.vueCache.get(filePath);
+    if (cached && cached.template) {
+        debug(`${publicPath} template cache hit`);
+        return cached.template;
+    }
+    const start = Date.now();
+    const { compileTemplate } = resolveVue_1.resolveCompiler(root);
+    if (typeof vueTransformAssetUrls === 'object') {
+        vueTransformAssetUrls = {
+            base: path_1.default.posix.dirname(publicPath),
+            ...vueTransformAssetUrls
+        };
+    }
+    const preprocessLang = template.lang;
+    let preprocessOptions = preprocessLang && vueTemplatePreprocessOptions[preprocessLang];
+    if (preprocessLang === 'pug') {
+        preprocessOptions = {
+            doctype: 'html',
+            ...preprocessOptions
+        };
+    }
+    const id = hash_sum_1.default(publicPath);
+    const { code, map, errors } = compileTemplate({
+        source: template.content,
+        id,
+        scoped,
+        filename: filePath,
+        inMap: template.map,
+        transformAssetUrls: vueTransformAssetUrls,
+        compilerOptions: {
+            ...vueCompilerOptions,
+            bindingMetadata,
+            runtimeModuleName: vueSpecifier,
+            // for backwards compat only
+            scopeId: scoped ? `data-v-${id}` : null
+        },
+        preprocessLang,
+        preprocessOptions,
+        preprocessCustomRequire: (id) => require(utils_1.resolveFrom(root, id))
+    });
+    if (errors.length) {
+        console.error(chalk_1.default.red(`\n[vite] SFC template compilation error: `));
+        errors.forEach((e) => {
+            if (typeof e === 'string') {
+                console.error(e);
+            }
+            else {
+                logError(e, filePath, template.map.sourcesContent[0]);
+            }
+        });
+    }
+    const result = {
+        code,
+        map: map
+    };
+    cached = cached || { styles: [], customs: [] };
+    cached.template = result;
+    exports.vueCache.set(filePath, cached);
+    debug(`${publicPath} template compiled in ${Date.now() - start}ms.`);
+    return result;
+}
+```
+
+`type=style`:
 
 ```js
 async function compileSFCStyle(root, style, index, filePath, publicPath, { cssPreprocessOptions, cssModuleOptions }) {
