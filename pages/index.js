@@ -66,6 +66,7 @@ export default function Home () {
 export async function getStaticProps () {
   // const allMdFile = require('../summary.json')
   // const props = { posts: allMdFile }
+  console.log('process.env.TEST', process.env.TEST)
   return {
     props: {}
   }
