@@ -9,7 +9,7 @@
     "build:production": "run-s build-summary build",
     "start": "next start",
     "deploy:setup": "pm2 deploy ecosystem.config.js production setup",
-    "deploy": "pm2 deploy ecosystem.config.js production update",
+    "deploy": "node ./rsyncEnvFile.js && pm2 deploy ecosystem.config.js production update",
     "build-summary:dev": "npm run build-summary --development",
     "build-summary": "node ./build-summary.js"
   },
