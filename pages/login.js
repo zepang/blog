@@ -15,6 +15,8 @@ export default function Login ({ siteOrigin }) {
 Login.getInitialProps = function () {
   const siteOrigin = process.env.SITE_ORIGIN
   console.log(process.env.SITE_ORIGIN)
+  console.log(process.env.GITHUB_CLIENT_ID)
+  console.log(process.env.GITHUB_CLIENT_SECRET)
   return {
     siteOrigin
   }
