@@ -14,6 +14,7 @@ export default function Login ({ siteOrigin }) {
 
 Login.getInitialProps = function () {
   const siteOrigin = process.env.SITE_ORIGIN
+  console.log(process.env.SITE_ORIGIN)
   return {
     siteOrigin
   }
