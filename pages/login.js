@@ -13,7 +13,7 @@ export default function Login ({ siteOrigin }) {
 }
 
 Login.getInitialProps = function () {
-  const siteOrigin = process.env.siteOrigin
+  const siteOrigin = process.env.SITE_ORIGIN
   return {
     props: {
       siteOrigin
