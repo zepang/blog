@@ -75,3 +75,18 @@ OK，不出意外我们能看到，编辑器给某些代码标记了一些红色
 
 ![](/images/why-typescript.png)
 
+把鼠标移动并悬停在波浪线标记的代码上方，VS Code会弹出提示告知我们一些信息，比如：
+
+![](/images/why-typescript-hover.png)
+
+VS Code告诉我们，readonly 属性不存在于 ProperDescriptor 类型中，所以，我们无法指定该属性值。正确的一个属性名应该是`writable`。
+
+我们也可以通过一些快捷键调出VS Code提供的输入建议（快捷键位组合可能与系统相关，请查看 VS Code -> setting -> keyboard shortcuts -> trigger suggest 绑定的快捷键）
+
+![](/images/why-typescript-suggest.png)
+
+好的，我们现在把 `readonly` 换成 `writable`，发现 `val` 出现了同样的提示，同样把 `val` 改成 `value`，直到VS Code不给出提示
+
+
+
+
