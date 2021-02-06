@@ -286,7 +286,7 @@ function add(books) {
 
 所以，影响了 Typescript 的检查，当我们去掉强制转换类型的代码之后，就可以看到 Typescript 给出的提示：
 
-![](/images/why-typescript-error-1.png)
+![](/images/why-typescript-error-2.png)
 
 最终的修改代码如下：
 
