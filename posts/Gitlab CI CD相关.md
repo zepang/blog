@@ -76,9 +76,77 @@ Gitlab项目首页=> setting => CI/CD => Runners => Specific Runners
 
 ```
 sudo gitlab-runner verify
+sudo gitlab-runner restart
 ```
 
 # 如何编写 .gitlab-ci.yml
+
+关于yml文件的基本语法就不过多说了，可以查阅网上相关的资料
+
+我们来看一个.gitlab-ci.yml的文件
+
+```yml
+image: node:14.15.4
+
+before_script:
+    - npm config set @scope:registry http://private-registry.com
+
+stages:
+    - install
+    - build
+    - deploy
+
+.base-job:
+    tags: app
+    only:
+        refs:
+            - master
+
+install-job:
+    extends: .base-job
+    stage: install
+    script:
+        - npm install
+
+build-job:
+    extends: .base-job
+    stage: build
+    script:
+        - npm run build
+
+install-job:
+    extends: .base-job
+    stage: deploy
+    script:
+        - sshpass -p $PASSWORD scp -r ./dist $CUSTOM_USERNAME@$CUSTOM_SERVER_IP:/var/www/
+    
+```
+
+其实，通过这些关键字字面意思大概能够理解整个yml配置文件的意思的。
+
+1. 因为之前注册runner选择的executor是docker，首先定义了 image：node:14.15.4
+
+2. 在before_script中定义了前置的一些npm配置
+
+3. 将 Pipeline 分为三个阶段：install build deploy
+
+4. 将多个job中相同的部分定义成了一个base-job，tags的定义需要和注册runner定义的一致该任务才会被执行，only关键字定义了只有在分支为master的条件下执行。
+
+5. 分别编写三个阶段对应的job，stage关键字定义了当前job属于哪个阶段，script定义了具体需要执行的命令或者脚本
+
+关于更多的关键说明，请查看相关的文档
+
+配置完毕之后，当推送代码到仓库的master分支，gitlab runner会根据 gitlab-ci.yml的配置执行对应的任务。
+
+## gitlab 提供的可视化界面
+
+- 可以通过gitlab代码仓库 > CI CD查看所有的 Pipeline
+
+- 点击 Pipeline id 或者 status可以进入 Pipeline 的详情页面
+
+- 在 Pipeline 的详情页面点击对应的 job，可以看到 job 运行输出的 log 信息，job 的状态等等
+
+更多的功能需要自行摸索
 
 # 如何查看和添加 CI 环境的变量
 
