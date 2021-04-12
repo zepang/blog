@@ -150,7 +150,29 @@ install-job:
 
 # 如何查看和添加 CI 环境的变量
 
+这里直接贴文档地址了，可视化的配置操作，不多说了
+
+![https://ksogit.kingsoft.net/help/ci/variables/README#variables](https://ksogit.kingsoft.net/help/ci/variables/README#variables)
+
 # 如何在 CI 环境中 pull 和 push 项目代码
+
+关于这块，其实网上是有很多相关的文章的。
+
+说一下我是如何解决的吧：
+
+1. 为了获取对应的权限，先去申请一下 project access token
+
+2. 配置环境变量 CI_PROJECT_ACCESS_TOKEN project access token
+
+3. 修改git remote origin 的地址
+
+```yml
+git remote add origin https://gitlab-ci-token:$CI_PROJECT_ACCESS_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git
+```
+
+4. 根据你创建的 project access token 的权限，可以进行拉取或者推送代码
+
+其实，我后面有考虑过这种处理方式可能并不是特别好，别人提交代码触发ci提交代码用的也会是我的project access token，但是仅考虑到只有我自己在使用，所以，无所谓了
 
 # 最后
 
