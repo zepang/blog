@@ -48,6 +48,8 @@ date: '2021-04-07'
 docker volume create gitlab-runner-config
 ```
 
+如果没有特殊的配置，docker 的 volumes 目录是`/var/lib/docker/volumes`，如果启动 gitlab-runner 之后，`gitlab-runner-config/_data`下会多出两个配置文件
+
 2. 创建并运行 gitlab-runner 容器
 ```
 docker run -d --name gitlab-runner --restart always  -v gitlab-runner-config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
@@ -90,6 +92,9 @@ image: node:14.15.4
 
 before_script:
     - npm config set @scope:registry http://private-registry.com
+
+variables:
+    ENV_BUILD: 'production'
 
 stages:
     - install
